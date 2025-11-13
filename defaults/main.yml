@@ -1,0 +1,21 @@
+---
+csr_private_key_path: "/etc/ssl/private/"
+csr_output_path: "/etc/ssl/csr"
+csr_common_name: "csr_test.example.com"
+csr_type: "RSA"
+csr_key_size: "4096"
+csr_country_name: "FR"
+csr_organization_name: "My Orga Name"
+csr_state: "My State"
+csr_locality: "My town"
+csr_organizational_unit: "IT"
+csr_mail_address: "admin_mail@example.com"
+csr_private_key_owner: "root"
+csr_private_key_group: "ssl-cert"
+csr_csr_owner: "root"
+csr_csr_group: "ssl-cert"
+csr_san: []
+  # Example
+  # - "alternative_name.example.com"
+  # - "192.168.1.1"
+  # - ""

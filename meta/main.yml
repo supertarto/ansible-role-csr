@@ -1,0 +1,21 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: "csr"
+  author: "Xavier Binois"
+  namespace: supertarto
+  description: "You have to get it signed by your authority and to import your certs with other role."
+  license: "GNU General Public License v3.0"
+  min_ansible_version: "2.19"
+
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+
+  galaxy_tags:
+    - security
+    - openssl
+    - certs

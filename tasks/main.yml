@@ -1,0 +1,53 @@
+---
+- name: Install OpenSSL
+  ansible.builtin.apt:
+    name: openssl
+    state: present
+    update_cache: true
+
+- name: Create Private Key directory
+  ansible.builtin.file:
+    path: "{{ csr_private_key_path }}"
+    state: directory
+    owner: "{{ csr_private_key_owner }}"
+    group: "{{ csr_private_key_owner }}"
+    mode: "0750"
+
+- name: Create CSR directory
+  ansible.builtin.file:
+    path: "{{ csr_output_path }}"
+    state: directory
+    owner: "{{ csr_csr_owner }}"
+    group: "{{ csr_csr_group }}"
+    mode: "0755"
+
+- name: Create Cert private key
+  community.crypto.openssl_privatekey:
+    path: "{{ csr_private_key_path }}/{{ csr_common_name }}.key"
+    type: "{{ csr_type }}"
+    size: "{{ csr_key_size }}"
+    owner: "{{ csr_private_key_owner }}"
+    group: "{{ csr_private_key_owner }}"
+    mode: "0600"
+
+- name: Create a CSR
+  community.crypto.openssl_csr:
+    path: "{{ csr_output_path }}/{{ csr_common_name }}.csr"
+    privatekey_path: "{{ csr_private_key_path }}/{{ csr_common_name }}.key"
+    common_name: "{{ csr_common_name }}"
+    country_name: "{{ csr_country_name }}"
+    state_or_province_name: "{{ csr_state }}"
+    locality_name: "{{ csr_locality }}"
+    organization_name: "{{ csr_organization_name }}"
+    organizational_unit_name: "{{ csr_organizational_unit }}"
+    email_address: "{{ csr_mail_address }}"
+    owner: "{{ csr_csr_owner }}"
+    group: "{{ csr_csr_group }}"
+    mode: "0644"
+    subject_alt_name: >
+      {{
+        csr_san |
+        map('regex_replace', '^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})$', 'IP:\\1') |
+        map('regex_replace', '^(?!.*\\.)(.*)$', 'DNS:\\1') |
+        list
+      }}
