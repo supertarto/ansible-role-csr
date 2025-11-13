@@ -1,6 +1,6 @@
 # Ansible Role CSR
 
-[![CI](https://github.com/supertarto/ansible-role-csr/workflows/ci.yml/badge.svg)](https://github.com/supertarto/ansible-role-csr/actions/workflows/ci.yml)
+[![CI](https://github.com/supertarto/ansible-role-sshdcsr/actions/workflows/ci.yml/badge.svg)](https://github.com/supertarto/ansible-role-sshd/actions/workflows/ci.yml)
 
 Create a CSR with Ansible. You have to get it signed by your authority and to import your certs with other role.
 
