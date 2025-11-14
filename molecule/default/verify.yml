@@ -1,0 +1,88 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Check if OpenSSL is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert OpenSSL and python3-cryptography are installed
+      ansible.builtin.assert:
+        that:
+          - "'openssl' in ansible_facts.packages"
+          - "'python3-cryptography' in ansible_facts.packages"
+        fail_msg: "OpenSSL or python3-cryptography is not installed"
+
+    - name: Check if private key directory exists
+      ansible.builtin.stat:
+        path: "{{ csr_private_key_path }}"
+      register: private_key_dir
+
+    - name: Assert private key directory exists and has correct permissions
+      ansible.builtin.assert:
+        that:
+          - private_key_dir.stat.exists
+          - private_key_dir.stat.isdir
+          - private_key_dir.stat.mode == '0750'
+          - private_key_dir.stat.pw_name == csr_private_key_owner
+          - private_key_dir.stat.gr_name == csr_private_key_owner
+        fail_msg: "Private key directory does not exist or has incorrect permissions"
+
+    - name: Check if CSR directory exists
+      ansible.builtin.stat:
+        path: "{{ csr_output_path }}"
+      register: csr_dir
+
+    - name: Assert CSR directory exists and has correct permissions
+      ansible.builtin.assert:
+        that:
+          - csr_dir.stat.exists
+          - csr_dir.stat.isdir
+          - csr_dir.stat.mode == '0755'
+          - csr_dir.stat.pw_name == csr_csr_owner
+          - csr_dir.stat.gr_name == csr_csr_group
+        fail_msg: "CSR directory does not exist or has incorrect permissions"
+
+    - name: Check if private key file exists
+      ansible.builtin.stat:
+        path: "{{ csr_private_key_path }}/{{ csr_common_name }}.key"
+      register: private_key_file
+
+    - name: Assert private key file exists and has correct permissions
+      ansible.builtin.assert:
+        that:
+          - private_key_file.stat.exists
+          - private_key_file.stat.isreg
+          - private_key_file.stat.mode == '0600'
+          - private_key_file.stat.pw_name == csr_private_key_owner
+          - private_key_file.stat.gr_name == csr_private_key_owner
+        fail_msg: "Private key file does not exist or has incorrect permissions"
+
+    - name: Check if CSR file exists
+      ansible.builtin.stat:
+        path: "{{ csr_output_path }}/{{ csr_common_name }}.csr"
+      register: csr_file
+
+    - name: Assert CSR file exists and has correct permissions
+      ansible.builtin.assert:
+        that:
+          - csr_file.stat.exists
+          - csr_file.stat.isreg
+          - csr_file.stat.mode == '0644'
+          - csr_file.stat.pw_name == csr_csr_owner
+          - csr_file.stat.gr_name == csr_csr_group
+        fail_msg: "CSR file does not exist or has incorrect permissions"
+
+    - name: Check CSR content
+      ansible.builtin.command: >
+        openssl req -in "{{ csr_output_path }}/{{ csr_common_name }}.csr" -noout -text
+      register: csr_content
+      changed_when: false
+
+    - name: Assert CSR contains the correct common name
+      ansible.builtin.assert:
+        that:
+          - "'Subject: CN = {{ csr_common_name }}' in csr_content.stdout"
+        fail_msg: "CSR does not contain the correct common name"
