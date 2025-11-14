@@ -1,7 +1,9 @@
 ---
-- name: Install OpenSSL
+- name: Install OpenSSL and python3-cryptography
   ansible.builtin.apt:
-    name: openssl
+    name: 
+      - openssl
+      - python3-cryptography
     state: present
     update_cache: true
 
