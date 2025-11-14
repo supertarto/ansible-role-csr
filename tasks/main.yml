@@ -44,10 +44,4 @@
     owner: "{{ csr_csr_owner }}"
     group: "{{ csr_csr_group }}"
     mode: "0644"
-    subject_alt_name: >
-      {{
-        csr_san |
-        map('regex_replace', '^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})$', 'IP:\\1') |
-        map('regex_replace', '^(?!.*\\.)(.*)$', 'DNS:\\1') |
-        list
-      }}
+    subject_alt_name: "{{ csr_san }}"

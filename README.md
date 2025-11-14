@@ -49,7 +49,7 @@ csr_csr_owner: "root"
 csr_csr_group: "ssl-cert"
 ```
 
-Subject Alternative Name, if needed. "IP:" and "DNS:" will be automatically added.
+Subject Alternative Name, if needed. **You have to add "IP:" or "DNS:" before your alternate name**
 ```yml
 csr_san: []
   # Example
